@@ -1,9 +1,11 @@
-#include <print>
-#include "Libero/ECS/Lookup.hpp"
+#include "src/Test.hpp"
 
-int main(){
+#include <print>
+
+int main()
+{
     lbr::ecs::lookup::Lookup lk;
     lk.createEntity<true>();
-    std::print("Hi there!");
+    std::print("Hi there!\n");
     return 0;
 }

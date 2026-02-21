@@ -1,2 +1,2 @@
 Drawable,
-FrameUpdatable,
+Descriptive,
