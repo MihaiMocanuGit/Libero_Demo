@@ -1,0 +1,3 @@
+[submodule "Libero"]
+	path = Libero
+	url = git@github.com:MihaiMocanuGit/Libero.git
