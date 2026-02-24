@@ -48,11 +48,11 @@ class CharacterFactory
                                  .isVisible = false};
         components::Descriptive ds {.name = name,
                                     .description = "This is you, for better or worse."};
-        components::Controlable ct {.userControlled = true, .stepSize = {0.6f, 0.6f, 0.5f}};
+        components::Controlable ct {.userControlled = true, .stepSize = {0.3f, 0.3f, 0.2f}};
 
         entity::Entity ent {m_ecsLookup.createEntity<true>()};
-        m_ecsLookup.assignMultipleComponents<true>(ent.id, std::move(tr), std::move(bd),
-                                                   std::move(dw), std::move(ds), std::move(ct));
+        m_ecsLookup.assignComponents<true>(ent.id, std::move(tr), std::move(bd), std::move(dw),
+                                           std::move(ds), std::move(ct));
         return ent.id;
     }
 };

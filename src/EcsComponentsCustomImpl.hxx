@@ -2,6 +2,7 @@
 
 // Trick to have better LSP completion. Do ignore recursive false-positive error.
 #include "Libero/HelpersSDL/SmartSDL.hpp"
+#include "Libero/Utilities/Vec.hpp"
 
 #include <string>
 // Appending into the namespace is important
@@ -12,8 +13,8 @@ struct Drawable
 {
     static constexpr EnumTypes id {EnumTypes::Drawable};
     lbr::hsdl::SmartSDL_Texture texture;
-    utl::Vec2<uint16_t> posOnScreen;
-    utl::Vec2<uint16_t> sizeOnScreen;
+    utl::Vec2f posOnScreen;
+    utl::Vec2<int> sizeOnScreen;
     bool isVisible;
 };
 template <>
