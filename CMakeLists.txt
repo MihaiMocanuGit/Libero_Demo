@@ -31,10 +31,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
     ${CMAKE_BINARY_DIR}/compile_commands.json ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json)
 
-add_compile_definitions(-DECS_COMPONENTS_CUSTOM)
-add_compile_definitions(-DECS_COMPONENTS_CUSTOM_PATH_TYPES="${CMAKE_CURRENT_SOURCE_DIR}/src/EcsComponentsCustomTypes.txt")
-add_compile_definitions(-DECS_COMPONENTS_CUSTOM_PATH_IMPL="${CMAKE_CURRENT_SOURCE_DIR}/src/EcsComponentsCustomImpl.hxx")
-
 add_subdirectory(Libero)
 
 add_subdirectory(src)

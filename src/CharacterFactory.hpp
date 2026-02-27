@@ -1,16 +1,18 @@
 #include "Libero/ECS/Lookup.hpp"
 #include "Libero/HelpersSDL/Utils.hpp"
 
+#include "EcsComponents.hpp"
+
 #include <expected>
 #include <filesystem>
 
 class CharacterFactory
 {
-    lbr::ecs::lookup::Lookup &m_ecsLookup;
+    lbr::ecs::lookup::Lookup<lbr::ecs::components::ETypes> &m_ecsLookup;
     lbr::hsdl::SmartSDL_Renderer &m_renderer;
 
   public:
-    CharacterFactory(lbr::ecs::lookup::Lookup &ecsLookup,
+    CharacterFactory(lbr::ecs::lookup::Lookup<lbr::ecs::components::ETypes> &ecsLookup,
                      lbr::hsdl::SmartSDL_Renderer &renderer) noexcept
         : m_ecsLookup {ecsLookup}, m_renderer {renderer}
     {
@@ -48,7 +50,7 @@ class CharacterFactory
                                  .isVisible = false};
         components::Descriptive ds {.name = name,
                                     .description = "This is you, for better or worse."};
-        components::Controlable ct {.userControlled = true, .stepSize = {0.3f, 0.3f, 0.2f}};
+        components::Controllable ct {.userControlled = true, .stepSize = {0.3f, 0.3f, 0.2f}};
 
         entity::Entity ent {m_ecsLookup.createEntity<true>()};
         m_ecsLookup.assignComponents<true>(ent.id, std::move(tr), std::move(bd), std::move(dw),

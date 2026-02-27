@@ -8,14 +8,12 @@
 #include "Libero/ECS/Components.hpp"
 #include "Libero/ECS/Entity.hpp"
 #include "Libero/ECS/Lookup.hpp"
-#include "Libero/HelpersSDL/GlobalSDLContext.hpp"
 #include "Libero/Utilities/Vec.hpp"
 #include "src/CharacterFactory.hpp"
 
 struct AppState
 {
-    using ContextSDL = lbr::hsdl::GlobalSDLContext;
-    lbr::ecs::lookup::Lookup ecsLookup;
+    lbr::ecs::lookup::Lookup<lbr::ecs::components::ETypes> ecsLookup;
     lbr::hsdl::SmartSDL_Renderer renderer {};
     lbr::hsdl::SmartSDL_Window window {};
     uint16_t desiredFrameRate {90};
@@ -31,7 +29,7 @@ SDL_AppResult SDL_AppInit(void **appstate, [[maybe_unused]] int argc, [[maybe_un
     constexpr unsigned WINDOW_W {1280};
     constexpr unsigned WINDOW_H {720};
 
-    static AppState state {.ecsLookup = ecs::lookup::Lookup {ENTITY_CAP, COMPONENT_CAP},
+    static AppState state {.ecsLookup = ecs::lookup::Lookup<lbr::ecs::components::ETypes> {ENTITY_CAP, COMPONENT_CAP},
                            .keyState = SDL_GetKeyboardState(nullptr)};
     *appstate = &state;
 
@@ -93,9 +91,9 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     bool D {state.keyState[SDL_SCANCODE_D]};
     if (A or W or S or D)
         state.ecsLookup.modifyGroupOfComponents<false, ecs::components::Transform,
-                                                ecs::components::Controlable>(
+                                                ecs::components::Controllable>(
             [&](ecs::entity::Entity ent, ecs::components::Transform &tr,
-                ecs::components::Controlable &ct)
+                ecs::components::Controllable &ct)
             {
                 if (ct.userControlled)
                 {
