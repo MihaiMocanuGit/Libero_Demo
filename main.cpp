@@ -29,8 +29,9 @@ SDL_AppResult SDL_AppInit(void **appstate, [[maybe_unused]] int argc, [[maybe_un
     constexpr unsigned WINDOW_W {1280};
     constexpr unsigned WINDOW_H {720};
 
-    static AppState state {.ecsLookup = ecs::lookup::Lookup<lbr::ecs::components::ETypes> {ENTITY_CAP, COMPONENT_CAP},
-                           .keyState = SDL_GetKeyboardState(nullptr)};
+    static AppState state {
+        .ecsLookup = ecs::lookup::Lookup<lbr::ecs::components::ETypes> {ENTITY_CAP, COMPONENT_CAP},
+        .keyState = SDL_GetKeyboardState(nullptr)};
     *appstate = &state;
 
     SDL_SetAppMetadata("Libero", "0.0.0", "com.libero.demo");
@@ -54,7 +55,7 @@ SDL_AppResult SDL_AppInit(void **appstate, [[maybe_unused]] int argc, [[maybe_un
     }
 
     CharacterFactory charFact {state.ecsLookup, state.renderer};
-    for (unsigned i {0}; i < 20000; ++i)
+    for (unsigned i {0}; i < 20'000; ++i)
     {
         auto ent = charFact.constructPlayer({16.0f * (i % 64), 16.0f * i / 64.0f, 1.0f * i},
                                             "Bartholomew", "resources/bartholomew.png");

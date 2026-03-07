@@ -1,3 +1,4 @@
+#include "Libero/ECS/Components.hpp"
 #include "Libero/HelpersSDL/SmartSDL.hpp"
 #include "Libero/Utilities/Vec.hpp"
 
@@ -5,7 +6,7 @@
 // Appending into the namespace is important
 namespace lbr::ecs::components
 {
-enum class ETypes : UnderlyingEMetaType
+enum class ETypes : SizeEType
 {
     Transform = 0, // The first field must start at 0. An enum with only countEType = 0 is also
                    // valid, albeit untested.
