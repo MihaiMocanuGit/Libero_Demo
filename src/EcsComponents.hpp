@@ -3,10 +3,9 @@
 #include "Libero/Utilities/Vec.hpp"
 
 #include <string>
-// Appending into the namespace is important
-namespace lbr::ecs::components
+namespace cmps
 {
-enum class ETypes : SizeEType
+enum class ETypes : lbr::ecs::SizeEType
 {
     Transform = 0, // The first field must start at 0. An enum with only countEType = 0 is also
                    // valid, albeit untested.
@@ -19,28 +18,17 @@ enum class ETypes : SizeEType
                 // them.
 
 };
-static_assert(EMetaType<ETypes>, "ETypes is not an EMetaType");
+static_assert(lbr::ecs::EMetaType<ETypes>, "ETypes is not an EMetaType");
 
 struct Transform
 {
-    utl::Vec3f pos;
+    lbr::utl::Vec3f pos;
     // uint8_t padding1;
-    utl::Vec3f rot;
+    lbr::utl::Vec3f rot;
     // uint8_t padding2;
-    utl::Vec3f size;
+    lbr::utl::Vec3f size;
     // uint8_t padding2;
 };
-template <>
-struct EType2CType<ETypes, ETypes::Transform>
-{
-    using CType = Transform;
-};
-template <>
-struct CType2EType<ETypes, Transform>
-{
-    static constexpr ETypes EType = ETypes::Transform;
-};
-static_assert(CType<Transform, ETypes>, "Transform is not a CType");
 
 struct Boundary
 {
@@ -50,70 +38,92 @@ struct Boundary
         CYLINDRICAL,      // r=max(x1,x2), h=x3
         ELIPTIC_CYLINDER, // a=x1, b=x2, h=x3
     } type;
-    utl::Vec3f size;
+    lbr::utl::Vec3f size;
 };
-template <>
-struct EType2CType<ETypes, ETypes::Boundary>
-{
-    using CType = Boundary;
-};
-template <>
-struct CType2EType<ETypes, Boundary>
-{
-    static constexpr ETypes EType = ETypes::Boundary;
-};
-static_assert(CType<Boundary, ETypes>, "Boundary is not a CType");
 
 struct Controllable
 {
     bool userControlled;
-    utl::Vec3f stepSize;
+    lbr::utl::Vec3f stepSize;
 };
-template <>
-struct EType2CType<ETypes, ETypes::Controllable>
-{
-    using CType = Controllable;
-};
-template <>
-struct CType2EType<ETypes, Controllable>
-{
-    static constexpr ETypes EType = ETypes::Controllable;
-};
-static_assert(CType<Controllable, ETypes>, "Boundary is not a CType");
 
 struct Drawable
 {
     lbr::hsdl::SmartSDL_Texture texture;
-    utl::Vec2f posOnScreen;
-    utl::Vec2<int> sizeOnScreen;
+    lbr::utl::Vec2f posOnScreen;
+    lbr::utl::Vec2<int> sizeOnScreen;
     bool isVisible;
 };
-template <>
-struct EType2CType<ETypes, ETypes::Drawable>
-{
-    using CType = Drawable;
-};
-template <>
-struct CType2EType<ETypes, Drawable>
-{
-    static constexpr ETypes EType = ETypes::Drawable;
-};
-static_assert(CType<Drawable, ETypes>, "Drawable is not a CType");
 
 struct Descriptive
 {
     std::string name;
     std::string description;
 };
-template <>
-struct EType2CType<ETypes, ETypes::Descriptive>
+} // namespace cmps
+
+// Appending into the namespace is important
+namespace lbr::ecs
 {
-    using CType = Descriptive;
+
+template <>
+struct EType2CType<cmps::ETypes, cmps::ETypes::Transform>
+{
+    using CType = cmps::Transform;
+};
+
+template <>
+struct CType2EType<cmps::ETypes, cmps::Transform>
+{
+    static constexpr cmps::ETypes EType = cmps::ETypes::Transform;
+};
+static_assert(CType<cmps::Transform, cmps::ETypes>, "Transform is not a CType");
+
+template <>
+struct EType2CType<cmps::ETypes, cmps::ETypes::Boundary>
+{
+    using CType = cmps::Boundary;
 };
 template <>
-struct CType2EType<ETypes, Descriptive>
+struct CType2EType<cmps::ETypes, cmps::Boundary>
 {
-    static constexpr ETypes EType = ETypes::Descriptive;
+    static constexpr cmps::ETypes EType = cmps::ETypes::Boundary;
 };
-static_assert(CType<Descriptive, ETypes>, "Descriptive is not a CType");
-} // namespace lbr::ecs::components
+static_assert(CType<cmps::Boundary, cmps::ETypes>, "Boundary is not a CType");
+
+template <>
+struct EType2CType<cmps::ETypes, cmps::ETypes::Controllable>
+{
+    using CType = cmps::Controllable;
+};
+template <>
+struct CType2EType<cmps::ETypes, cmps::Controllable>
+{
+    static constexpr cmps::ETypes EType = cmps::ETypes::Controllable;
+};
+static_assert(CType<cmps::Controllable, cmps::ETypes>, "Boundary is not a CType");
+
+template <>
+struct EType2CType<cmps::ETypes, cmps::ETypes::Drawable>
+{
+    using CType = cmps::Drawable;
+};
+template <>
+struct CType2EType<cmps::ETypes, cmps::Drawable>
+{
+    static constexpr cmps::ETypes EType = cmps::ETypes::Drawable;
+};
+static_assert(CType<cmps::Drawable, cmps::ETypes>, "Drawable is not a CType");
+
+template <>
+struct EType2CType<cmps::ETypes, cmps::ETypes::Descriptive>
+{
+    using CType = cmps::Descriptive;
+};
+template <>
+struct CType2EType<cmps::ETypes, cmps::Descriptive>
+{
+    static constexpr cmps::ETypes EType = cmps::ETypes::Descriptive;
+};
+static_assert(CType<cmps::Descriptive, cmps::ETypes>, "Descriptive is not a CType");
+} // namespace lbr::ecs
