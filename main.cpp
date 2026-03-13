@@ -55,9 +55,9 @@ SDL_AppResult SDL_AppInit(void **appstate, [[maybe_unused]] int argc, [[maybe_un
     }
 
     CharacterFactory charFact {state.ecsLookup, state.renderer};
-    for (unsigned i {0}; i < 20'000; ++i)
+    for (unsigned i {0}; i < 1'000; ++i)
     {
-        auto ent = charFact.constructPlayer({16.0f * (i % 64), 16.0f * i / 64.0f, 1.0f * i},
+        auto ent = charFact.constructPlayer({32.0f * (i % 64), 64.0f * i / 64.0f, 1.0f * i},
                                             "Bartholomew", "resources/bartholomew.png");
         if (not ent.has_value())
         {
@@ -93,7 +93,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     bool D {state.keyState[SDL_SCANCODE_D]};
     if (A or W or S or D)
         state.ecsLookup.modifyGroupOfComponents<false, Transform, Controllable>(
-            [&](ecs::Entity ent, Transform &tr, Controllable &ct)
+            [&](ecs::Entity, Transform &tr, Controllable &ct)
             {
                 if (ct.userControlled)
                 {
@@ -119,7 +119,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     SDL_RenderClear(state.renderer.res);
 
     state.ecsLookup.modifyGroupOfComponents<false, Transform, Drawable>(
-        [&](ecs::Entity ent, Transform &tr, Drawable &dr)
+        [&](ecs::Entity, Transform &tr, Drawable &dr)
         {
             dr.posOnScreen = {(tr.pos[0] - seenWorldRegion.ll[0]) * windowSize[0] /
                                   (seenWorldRegion.ur[0] - seenWorldRegion.ll[0]),
