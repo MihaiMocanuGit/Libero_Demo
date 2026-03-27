@@ -1,0 +1,1 @@
+../../Libero/modules/ECS/scripts/generate.py

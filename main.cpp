@@ -9,7 +9,7 @@
 #include "Libero/ECS/Entity.hpp"
 #include "Libero/ECS/Lookup.hpp"
 #include "Libero/Utilities/Vec.hpp"
-#include "src/CharacterFactory.hpp"
+#include "src/UnitFactory.hpp"
 
 struct AppState
 {
@@ -54,18 +54,13 @@ SDL_AppResult SDL_AppInit(void **appstate, [[maybe_unused]] int argc, [[maybe_un
         return SDL_APP_FAILURE;
     }
 
-    CharacterFactory charFact {state.ecsLookup, state.renderer};
-    for (unsigned i {0}; i < 1'000; ++i)
+    UnitFactory fct {state.ecsLookup, state.renderer};
+    auto knight {fct.constructKnight({0, 0}, 0)};
+    if (not knight.has_value())
     {
-        auto ent = charFact.constructPlayer({32.0f * (i % 64), 64.0f * i / 64.0f, 1.0f * i},
-                                            "Bartholomew", "resources/bartholomew.png");
-        if (not ent.has_value())
-        {
-            // SDL_Log("Couldn't initialize the player: %s", ent.error().msg.data());
-            return SDL_APP_FAILURE;
-        }
+        SDL_Log("Couldn't initialize the player: %s", knight.error().msg.data());
+        return SDL_APP_FAILURE;
     }
-
     return SDL_APP_CONTINUE;
 }
 
@@ -87,29 +82,6 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     using namespace lbr;
     using namespace cmps;
     [[maybe_unused]] AppState &state = *reinterpret_cast<AppState *>(appstate);
-    bool W {state.keyState[SDL_SCANCODE_W]};
-    bool A {state.keyState[SDL_SCANCODE_A]};
-    bool S {state.keyState[SDL_SCANCODE_S]};
-    bool D {state.keyState[SDL_SCANCODE_D]};
-    if (A or W or S or D)
-        state.ecsLookup.modifyGroupOfComponents<false, Transform, Controllable>(
-            [&](ecs::Entity, Transform &tr, Controllable &ct)
-            {
-                if (ct.userControlled)
-                {
-                    uint64_t dt {startMs - state.prevTick};
-                    if (W)
-                        tr.pos[1] -= dt * ct.stepSize[1];
-                    if (A)
-                        tr.pos[0] -= dt * ct.stepSize[0];
-                    if (S)
-                        tr.pos[1] += dt * ct.stepSize[1];
-                    if (D)
-                        tr.pos[0] += dt * ct.stepSize[0];
-                }
-            });
-
-    // Convert global coordinates to screen space.
     utl::Rect<float, 2> seenWorldRegion {.ur = utl::Vec2f {256, 256},
                                          .ll = utl::Vec2f {-256, -256}};
     utl::Vec2<int> windowSize;
@@ -118,23 +90,22 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     SDL_SetRenderDrawColor(state.renderer.res, 127, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(state.renderer.res);
 
-    state.ecsLookup.modifyGroupOfComponents<false, Transform, Drawable>(
-        [&](ecs::Entity, Transform &tr, Drawable &dr)
+    state.ecsLookup.readGroupOfComponents<false, Transform, Draw>(
+        [&](ecs::Entity, const Transform &tr, const Draw &dr)
         {
-            dr.posOnScreen = {(tr.pos[0] - seenWorldRegion.ll[0]) * windowSize[0] /
-                                  (seenWorldRegion.ur[0] - seenWorldRegion.ll[0]),
-                              (tr.pos[1] - seenWorldRegion.ll[1]) * windowSize[1] /
-                                  (seenWorldRegion.ur[1] - seenWorldRegion.ll[1])};
-            dr.sizeOnScreen = {dr.texture.res->w, dr.texture.res->w};
+            utl::Vec2f posOnScreen = {(tr.pos[0] - seenWorldRegion.ll[0]) * windowSize[0] /
+                                          (seenWorldRegion.ur[0] - seenWorldRegion.ll[0]),
+                                      (tr.pos[1] - seenWorldRegion.ll[1]) * windowSize[1] /
+                                          (seenWorldRegion.ur[1] - seenWorldRegion.ll[1])};
+            utl::Vec2<int> sizeOnScreen = {dr.texture.res->w, dr.texture.res->w};
             // SDL_Log("%s", std::format("World Space: x = {}, y = {}", tr.pos[0],
             // tr.pos[1]).c_str());
-            SDL_FRect dstRect {.x = dr.posOnScreen[0],
-                               .y = dr.posOnScreen[1],
-                               .w = static_cast<float>(dr.sizeOnScreen[0]),
-                               .h = static_cast<float>(dr.sizeOnScreen[1])};
+            SDL_FRect dstRect {.x = posOnScreen[0],
+                               .y = posOnScreen[1],
+                               .w = static_cast<float>(sizeOnScreen[0]),
+                               .h = static_cast<float>(sizeOnScreen[1])};
             SDL_RenderTexture(state.renderer.res, dr.texture.res, nullptr, &dstRect);
         });
-
     SDL_RenderPresent(state.renderer.res);
     uint64_t endMs {SDL_GetTicks()};
     state.prevTick = endMs;
